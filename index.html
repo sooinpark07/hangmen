@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>행맨 게임</title>
+    <style>
+        body {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #word-display {
+            font-size: 36px;
+            margin: 10px;
+        }
+
+        #input-letter {
+            font-size: 24px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>행맨 게임</h1>
+    <div id="word-display"></div>
+    <p>알파벳을 입력하세요:</p>
+    <input type="text" id="input-letter" oninput="checkLetter()" maxlength="1">
+    <p id="attempts">남은 시도 횟수: <span id="attempt-count"></span></p>
+    <p id="result"></p>
+    <button id="retry-button" style="display: none" onclick="initializeGame()">재시도</button>
+
+    <script>
+        const words = ["apple", "banana", "cherry", "date", "elderberry", "fig","pig","cat","dog","puppy"];
+        let selectedWord = '';
+        let displayWord = [];
+        let attempts = 7;
+
+        function initializeGame() {
+            selectedWord = words[Math.floor(Math.random() * words.length)];
+            displayWord = Array(selectedWord.length).fill('_');
+            attempts = 7;
+            document.getElementById('attempt-count').textContent = attempts;
+            document.getElementById('word-display').textContent = displayWord.join(' ');
+            document.getElementById('result').textContent = '';
+            document.getElementById('retry-button').style.display = 'none';
+            document.getElementById('input-letter').value = '';
+        }
+
+        function checkLetter() {
+            const letterInput = document.getElementById('input-letter').value.toLowerCase();
+            if (letterInput.length === 1) {
+                const letterIndices = [];
+                for (let i = 0; i < selectedWord.length; i++) {
+                    if (selectedWord[i] === letterInput) {
+                        letterIndices.push(i);
+                    }
+                }
+                if (letterIndices.length > 0) {
+                    for (const index of letterIndices) {
+                        displayWord[index] = letterInput;
+                    }
+                    document.getElementById('word-display').textContent = displayWord.join(' ');
+
+                    if (!displayWord.includes('_')) {
+                        document.getElementById('result').textContent = '승리! 정답: ' + selectedWord;
+                        document.getElementById('retry-button').style.display = 'block';
+                    }
+                } else {
+                    attempts -= 1;
+                    document.getElementById('attempt-count').textContent = attempts;
+                    if (attempts === 0) {
+                        document.getElementById('result').textContent = '패배! 정답: ' + selectedWord;
+                        document.getElementById('retry-button').style.display = 'block';
+                    }
+                }
+            }
+        }
+
+        initializeGame();
+    </script>
+</body>
+</html>
